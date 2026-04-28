@@ -1,0 +1,30 @@
+looks at match history 
+
+most winrate on a champ 
+recommend it for ranked 
+recommend build and runes 
+
+# brainstorming
+most played champions recently (recommend one)
+basic tips 
+
+champion specific tips (low cs ex)
+role specific advice 
+
+# chat gbt suggestions 
+1. Contextual Winrate (not just raw winrate)
+
+Raw winrate lies a lot.
+
+Break it down into:
+
+Winrate by role
+Winrate by game duration (early vs late game champs)
+Winrate when ahead vs behind at 10 min
+
+
+# work flow 
+user types username 
+checks database for userdata otherwise does api call to retrieve data and save data to database
+also have an update button to update data
+display data for user 
