@@ -8,8 +8,8 @@
 <body>
     <form method="post">
         {% csrf_token %}
-        <input type="text" name="user name" placeholder="type summoner name..." required>
-        <input type="text" name="user tag" placeholder="type your tag, #...." required>
+        <input type="text" name="userName" placeholder="type summoner name..." required>
+        <input type="text" name="userTag" placeholder="type your tag, #...." required>
         <button type="submit">submit</button>
     </form>
 </body>
@@ -19,10 +19,10 @@
     <p>{{ game }}</p>
     {% endfor %}
     <h1>{{ objectives }}</h1>
+    
     <h1>Vision:</h1>
+    
     {% for ward in vision %}
-    <p>{{ ward }}</p>
-    {% endfor %}
-    {% for war in vision %}
+        <p>{{ ward }}</p>
     {% endfor %}
 </html>

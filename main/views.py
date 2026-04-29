@@ -1,9 +1,9 @@
 from django.shortcuts import render
 import requests
 import time 
-
-# add bar to monitor elo (nvm too much performance, just add simple info bar) 
-# clean the tag input (in case a user adds # on its own) 
+from concurrent.futures import ThreadPoolExecutor
+ 
+# add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
 # optimize performance (parellel requests)
 # test cases
@@ -12,7 +12,7 @@ import time
 # unit testing 
 # security (obscure admin adress, anti bots)
 
-riot_api_key = 'RGAPI-7e1c37b5-d0b3-468f-869c-073c94a007a4'
+riot_api_key = 'RGAPI-6316156a-00e7-4063-84f0-8c794d71daff'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -55,15 +55,15 @@ def calculate_kda_average(kda):
     final_kda = round(total / len(kda), 1)
     return final_kda
 
+def fetch_match(match_id):
+    url = f'https://europe.api.riotgames.com/lol/match/v5/matches/{match_id}?api_key={riot_api_key}'
+    
 def index(request):
-    # read input from form and send request to the api
-
     context = {}
 
     if request.method == 'POST':
-        start = time.time()
-        username = request.POST.get('user name')
-        usertag = request.POST.get('user tag') 
+        username = request.POST.get('userName')
+        usertag = request.POST.get('userTag', '').lstrip('#')
 
         # get the player id
         player_id_api = f'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{username}/{usertag}?api_key={riot_api_key}'
@@ -263,7 +263,7 @@ def index(request):
                 'You are putting too much gold into wards \nYou are not warding critical spots on the map'
             ]
 
-        # wineate by kda 
+        # wineate by kda ---------------------------------------------------------------------------------
         win_kda = calculate_kda_average(kda_per_wins)
         lose_kda = calculate_kda_average(kda_per_loses)
         print(f'kda average while win {win_kda}')
@@ -274,6 +274,7 @@ def index(request):
         else:
             print(f'your KDA is not affecting you wins \n dont be afraid of doing risky plays and dying as long as they help secure objectives ')
 
+        # context -------------------------------------------------------------------------
         context = {
             'bestChamp': best,
             'bestChampWinrate':best_winrate,
@@ -282,7 +283,4 @@ def index(request):
             'vision':warding_tips
         }
     
-        end = time.time()
-        print(f'time taken {end - start}')
-
     return render(request, 'index.html', context)
