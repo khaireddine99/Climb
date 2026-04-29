@@ -1,11 +1,5 @@
-import time 
+try:
+    x = input('give random number')
 
-start = time.time()
-
-for i in range(100000):
-    print(i)
-
-end = time.time()
-
-print(f'time taken {end - start}')
-
+except:
+    print('x is not a number')

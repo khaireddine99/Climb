@@ -5,11 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
  
 # add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
-# optimize performance (parellel requests)
+# optimize performance 
 # test cases
-# for the text tips either raw dog it or add a list and call it tool tips 
-# handle input if its empty (required field)
-# unit testing 
 # security (obscure admin adress, anti bots)
 
 riot_api_key = 'RGAPI-6316156a-00e7-4063-84f0-8c794d71daff'
@@ -66,25 +63,39 @@ def index(request):
         usertag = request.POST.get('userTag', '').lstrip('#')
 
         # get the player id
-        player_id_api = f'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{username}/{usertag}?api_key={riot_api_key}'
-        response = requests.get(player_id_api)
-        player_id_data = response.json()
-        player_id = player_id_data['puuid']
-        print(f"player id {player_id_data['puuid']}")
-
+        try:
+            player_id_api = f'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{username}/{usertag}?api_key={riot_api_key}'
+            response = requests.get(player_id_api)
+            player_id_data = response.json()
+            player_id = player_id_data['puuid']
+            print(f"player id {player_id_data['puuid']}")
+        except Exception as e:
+            return render(request, 'index.html', context={'error': 'player not found, please enter correct username and tag'})
+            
         # get match ids 
-        match_list_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{player_id}/ids?start=0&count=20&api_key={riot_api_key}'
-        response = requests.get(match_list_api)
-        match_list = response.json()
-        classic_matches_list = []
+        try:
+            match_list_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{player_id}/ids?start=0&count=2&api_key={riot_api_key}'
+            response = requests.get(match_list_api)
+            match_list = response.json()
+            classic_matches_list = []
+        except Exception as e:
+            print(f'failed at retrieving the matches')
+            return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
 
         # get each match info and store the CLASSIC only games 
         for m in match_list:
-            match_info_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/{m}?api_key={riot_api_key}'
-            response = requests.get(match_info_api)
-            data = response.json()
-            if data['info']['gameMode'] == 'CLASSIC':
-                classic_matches_list.append(data)
+            try:
+                match_info_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/{m}?api_key={riot_api_key}'
+                response = requests.get(match_info_api)
+                data = response.json()
+                if data['info']['gameMode'] == 'CLASSIC':
+                    classic_matches_list.append(data)
+            except Exception as e:
+                print('failed at retrieving match info')
+                return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
+        
+        if len(classic_matches_list) <= 1:
+            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your histroy to gather information'})
 
         # store champions in disctionnary, calculate winrate
         favorite_heroes = {}
