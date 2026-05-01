@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 # test cases
 # security (obscure admin adress, anti bots)
 
-riot_api_key = 'RGAPI-6316156a-00e7-4063-84f0-8c794d71daff'
+riot_api_key = 'RGAPI-8fa5edc7-2088-44a8-a60a-ce90cb048ae9'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -74,7 +74,7 @@ def index(request):
             
         # get match ids 
         try:
-            match_list_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{player_id}/ids?start=0&count=2&api_key={riot_api_key}'
+            match_list_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{player_id}/ids?start=0&count=20&api_key={riot_api_key}'
             response = requests.get(match_list_api)
             match_list = response.json()
             classic_matches_list = []
@@ -219,7 +219,6 @@ def index(request):
                 objectives_per_wins.append([ally_objectives, total_objectives])
             else:
                 objectives_per_loses.append([ally_objectives, total_objectives])
-
 
         print(f'based on your match history your best performing champion is {best}')
 
