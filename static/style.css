@@ -1,0 +1,54 @@
+body {
+  background: #0b0b0f;
+  color: #eee;
+  font-family: Arial, sans-serif;
+  background: url('/static/ahri.jpg') no-repeat center;
+  background-size: cover;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 60px 20px 20px; /* 👈 extra top padding */
+}
+
+.title {
+  text-align: center;
+  color: #ff4d6d;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.search-box button {
+  background: #ff4d6d;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
+
+.card {
+  background: rgba(21, 21, 29, 0.75); /* 0.75 = 75% visible */
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.2);
+}
+
+.tips li {
+  margin-bottom: 5px;
+}

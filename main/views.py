@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 # test cases
 # security (obscure admin adress, anti bots)
 
-riot_api_key = 'RGAPI-8fa5edc7-2088-44a8-a60a-ce90cb048ae9'
+riot_api_key = 'RGAPI-21bd363a-2b77-44a6-ad5e-b5fe8421ab8f'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -70,6 +70,7 @@ def index(request):
             player_id = player_id_data['puuid']
             print(f"player id {player_id_data['puuid']}")
         except Exception as e:
+            print('error getting player id')
             return render(request, 'index.html', context={'error': 'player not found, please enter correct username and tag'})
             
         # get match ids 
@@ -280,17 +281,31 @@ def index(request):
         print(f'kda average while losing {lose_kda}')
 
         if win_kda > lose_kda:
-            print(f'your KDA is highly impacting your wins \n focus on dying less \n do more pro active plays')
+            kdatips = [
+                'your KDA is highly impacting your wins',
+                'focus on dying less',
+                'do more pro active plays'
+            ]
         else:
-            print(f'your KDA is not affecting you wins \n dont be afraid of doing risky plays and dying as long as they help secure objectives ')
-
+            print(f' \n  ')
+            kdatips = [
+                'your good KDA is not affecting you wins',
+                'done be a KDA player'
+                'dont be afraid of doing risky plays and dying as long as they help secure an advantage'
+            ]
         # context -------------------------------------------------------------------------
         context = {
             'bestChamp': best,
             'bestChampWinrate':best_winrate,
-            'gameLength':game_length_tips,
-            'objectives':paired_objectives,
-            'vision':warding_tips
+            'winkda':win_kda,
+            'losekda':lose_kda,
+            'kdatips':kdatips,
+            'jnglObjectives':paired_objectives,
+            'averageWardWins':w_wins,
+            'averageWardLoses':w_loses,
+            'wardingTips':warding_tips,
+            'winByGameLength':percentage_winrate_by_game_length,
+            'gameLengthTips':game_length_tips
         }
     
     return render(request, 'index.html', context)

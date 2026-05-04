@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <div class="container">
+
+    <form method="post" class="search-box">
+      {% csrf_token %}
+      <input type="text" name="userName" placeholder="Summoner name..." required>
+      <input type="text" name="userTag" placeholder="#TAG" required>
+      <button type="submit">Analyze</button>
+    </form>
+
+    <div class="card">
+      <h2>Best Champion</h2>
+      <p>{{ bestChamp }} ({{ bestChampWinrate }}%)</p>
+    </div>
+
+    <div class="card">
+      <h2>Game Length</h2>
+      {% for game in gameLength %}
+        <p>{{ game }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <h2>Objectives</h2>
+      <p>{{ objectives }}</p>
+    </div>
+
+    <div class="card tips">
+      <h2>Tips</h2>
+      <ul>
+        {% for tip in tips %}
+          <li>{{ tip }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+  </div>
+</body>
+</html>
