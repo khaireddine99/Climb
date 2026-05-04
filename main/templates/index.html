@@ -1,39 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>main page</title>
+    <title>Ahri Stats</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
+
 <body>
-    <form method="post">
+  <div class="overlay"></div>
+
+  <div class="container">
+
+    <!-- Search -->
+    <form method="post" class="search-box">
         {% csrf_token %}
-        <input type="text" name="userName" placeholder="game name..." required>
-        <input type="text" name="userTag" placeholder="tag #...." required>
+        <input type="text" name="userName" placeholder="Summoner name..." required>
+        <input type="text" name="userTag" placeholder="#TAG" required>
         <button type="submit">Analyze</button>
     </form>
-    <div>
+
+    <!-- Results -->
+    {% if bestChamp %}
+    <div class="cards">
+
         <div class="card">
+            <h3>Best Champion</h3>
             <p>{{ bestChamp }}</p>
-            <p>{{ bestChampWinrate}}</p>
+            <p>{{ bestChampWinrate }}%</p>
         </div>
+
         <div class="card">
-            <p>{{ winkda }}</p>
-            <p>{{ losekda }}</p>
-            <p>{{ kdatips }}</p>
+            <h3>KDA</h3>
+            <p>Win: {{ winkda }}</p>
+            <p>Lose: {{ losekda }}</p>
+            <p class="tip">{{ kdatips }}</p>
         </div>
+
         <div class="card">
-            {{ jnglObjectives }}
+            <h3>Objectives</h3>
+            <p>{{ jnglObjectives }}</p>
         </div>
+
         <div class="card">
-            {{ winByGameLength }}
-            {{ gameLengthTips }}
+            <h3>Game Length</h3>
+            <p>{{ winByGameLength }}</p>
+            <p class="tip">{{ gameLengthTips }}</p>
         </div>
+
         <div class="card">
-            <p>{{ averageWardWins }}</p>
-            <p>{{ averageWardLoses }}</p>
-            <p>{{ wardingTips }}</p>
+            <h3>Vision</h3>
+            <p>Wins: {{ averageWardWins }}</p>
+            <p>Loses: {{ averageWardLoses }}</p>
+            <p class="tip">{{ wardingTips }}</p>
         </div>
+
     </div>
+    {% endif %}
+
+  </div>
 </body>
 </html>

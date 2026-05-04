@@ -3,10 +3,9 @@ import requests
 import time 
 from concurrent.futures import ThreadPoolExecutor
  
+# find a solution to get champion icons 
 # add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
-# optimize performance 
-# test cases
 # security (obscure admin adress, anti bots)
 
 riot_api_key = 'RGAPI-21bd363a-2b77-44a6-ad5e-b5fe8421ab8f'
@@ -54,7 +53,11 @@ def calculate_kda_average(kda):
 
 def fetch_match(match_id):
     url = f'https://europe.api.riotgames.com/lol/match/v5/matches/{match_id}?api_key={riot_api_key}'
-    
+
+def format_champ_name(name):
+    '''format champ image'''
+    return name.replace(" ", "").replace("'", "")
+
 def index(request):
     context = {}
 
@@ -134,6 +137,11 @@ def index(request):
                     best = champ
         
         best_winrate = round(best_winrate * 100)
+
+        champion_img = format_champ_name(best)
+        version = '14.10.1'
+        champion_img_route = f'https://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{champion_img}.png'
+
 
         winrate_by_length = {
             'early': {
@@ -294,9 +302,11 @@ def index(request):
                 'dont be afraid of doing risky plays and dying as long as they help secure an advantage'
             ]
         # context -------------------------------------------------------------------------
+        print(f'champ route {champion_img_route}')
         context = {
             'bestChamp': best,
             'bestChampWinrate':best_winrate,
+            'champImgRoute':champion_img_route,
             'winkda':win_kda,
             'losekda':lose_kda,
             'kdatips':kdatips,
