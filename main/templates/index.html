@@ -25,10 +25,21 @@
     {% if bestChamp %}
     <div class="cards">
 
-        <div class="card">
+        <div class="card best-champ">
             <h3>Best Champion</h3>
-            <p>{{ bestChamp }}</p>
-            <p>{{ bestChampWinrate }}%</p>
+
+            <div class="champ-row">
+                <img 
+                src="{{ champImgRoute }}"
+                alt="{{ bestChamp }}"
+                class="champ-icon"
+                >
+
+                <div class="champ-info">
+                    <p class="champ-name">{{ bestChamp }}</p>
+                    <p class="champ-winrate">{{ bestChampWinrate }}%</p>
+                </div>
+            </div>
         </div>
 
         <div class="card">

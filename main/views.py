@@ -7,8 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 # add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
 # security (obscure admin adress, anti bots)
+# handle more than one champ issue (return error not enough data on your profile)
 
-riot_api_key = 'RGAPI-21bd363a-2b77-44a6-ad5e-b5fe8421ab8f'
+riot_api_key = 'RGAPI-4cc84612-3cd2-48b6-9c80-09ef7a731eda'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -138,6 +139,8 @@ def index(request):
         
         best_winrate = round(best_winrate * 100)
 
+        print(f'best champion is {best}')
+        # prepare url to get the champion icon
         champion_img = format_champ_name(best)
         version = '14.10.1'
         champion_img_route = f'https://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{champion_img}.png'
