@@ -254,9 +254,9 @@ def index(request):
         # winrate by jngl objectives 
         obj_per = objectives_percentage(objectives_per_wins)
         obj_lose = objectives_percentage(objectives_per_loses)
-        objective_names = ['dragon', 'void grubs', 'rift', 'baron']
+        objective_names = ['drake', 'void grubs', 'rift', 'baron']
         paired_objectives = list(zip(objective_names, obj_per))
-        paired_objectives = sorted(paired_objectives, key=lambda x:x[1], reverse=True)
+        sorted_paired_objectives = sorted(paired_objectives, key=lambda x:x[1], reverse=True)[0]
     
         # winrate by vision -------------------------------------------------------------
         ward_average = 0
@@ -305,7 +305,7 @@ def index(request):
                 'dont be afraid of doing risky plays and dying as long as they help secure an advantage'
             ]
         # context -------------------------------------------------------------------------
-        print(f'champ route {champion_img_route}')
+        print(f'objectives: {sorted_paired_objectives}')
         context = {
             'bestChamp': best,
             'bestChampWinrate':best_winrate,
@@ -314,6 +314,7 @@ def index(request):
             'losekda':lose_kda,
             'kdatips':kdatips,
             'jnglObjectives':paired_objectives,
+            'sortedJnglObjectives':sorted_paired_objectives,
             'averageWardWins':w_wins,
             'averageWardLoses':w_loses,
             'wardingTips':warding_tips,

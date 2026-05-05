@@ -49,9 +49,34 @@
             <p class="tip">{{ kdatips }}</p>
         </div>
 
-        <div class="card">
-            <h3>Objectives</h3>
-            <p>{{ jnglObjectives }}</p>
+        <div class="card objectives">
+            <h3>Objective Control Per Wins</h3>
+
+            <div class="objectives-row">
+
+                <div class="objective">
+                    <img src="{% static 'drake.png' %}" class="objective-icon">
+                    <p>{{ jnglObjectives.0.1 }}%</p>
+                </div>
+
+                <div class="objective">
+                    <img src="{% static 'voidGrubs.png' %}" class="objective-icon">
+                    <p>{{ jnglObjectives.1.1 }}%</p>
+                </div>
+
+                <div class="objective">
+                    <img src="{% static 'rift.png' %}" class="objective-icon">
+                    <p>{{ jnglObjectives.2.1 }}%</p>
+                </div>
+
+                <div class="objective">
+                    <img src="{% static 'baron.png' %}" class="objective-icon">
+                    <p>{{ jnglObjectives.3.1 }}%</p>
+                </div>
+
+            </div>
+            <br>
+            <p>the objective contributing to your wins the most is {{sortedJnglObjectives.0}}</p>
         </div>
 
         <div class="card">

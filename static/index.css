@@ -142,3 +142,35 @@ body {
 .champ-winrate {
   color: #33ff00;
 }
+
+/* objective styling */
+
+.objectives-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* Each objective block */
+.objective {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Icons */
+.objective-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
+}
+
+/* Percentage text */
+.objective p {
+  font-size: 1rem;
+  color: #33ff00;
+}
