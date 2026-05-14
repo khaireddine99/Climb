@@ -2,14 +2,14 @@ from django.shortcuts import render
 import requests
 import time 
 from concurrent.futures import ThreadPoolExecutor
- 
-# find a solution to get champion icons 
+
+# clean up the tips, clean up the code   
 # add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
 # security (obscure admin adress, anti bots)
 # handle more than one champ issue (return error not enough data on your profile)
 
-riot_api_key = 'RGAPI-4cc84612-3cd2-48b6-9c80-09ef7a731eda'
+riot_api_key = 'RGAPI-ffb75f9e-c1fd-456c-97dc-a61fee131d79'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -100,7 +100,7 @@ def index(request):
                 return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
         
         if len(classic_matches_list) <= 1:
-            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your histroy to gather information'})
+            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your match histroy to gather information'})
 
         # store champions in disctionnary, calculate winrate
         favorite_heroes = {}
@@ -137,6 +137,9 @@ def index(request):
                     best_winrate = winrate 
                     best = champ
         
+        if best == None:
+            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your match histroy to gather information'})
+        
         best_winrate = round(best_winrate * 100)
 
         print(f'best champion is {best}')
@@ -144,7 +147,6 @@ def index(request):
         champion_img = format_champ_name(best)
         version = '14.10.1'
         champion_img_route = f'https://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{champion_img}.png'
-
 
         winrate_by_length = {
             'early': {
@@ -239,19 +241,18 @@ def index(request):
         if percentage_winrate_by_game_length[0] > percentage_winrate_by_game_length[1]:
             game_length_tips = [
                 'strong early, weak late',
-                'You win more early games—focus on ending faster',
-                'Avoid unnecessary fights after 25–30 min',
-                'Convet leads into baron / elder and eventually ending the game'
+                'You perform better in short games',
+                'After 25-30 min, avoid roaming the map aimlessly',
+                'Convert leads into Baron / Elder, then eventually end the game.'
             ]
         else:
             game_length_tips = [
                 'weak early, strong late',
                 'Play safer in the early game and try to die less',
-                'Focus on farming / clearing camps / scaling',
-                'Avoid unnecessary fights'
+                'Play for the late game and focus on scaling',
             ]
 
-        # winrate by jngl objectives 
+        # winrate by jngl objectives ------------------------------------------------------
         obj_per = objectives_percentage(objectives_per_wins)
         obj_lose = objectives_percentage(objectives_per_loses)
         objective_names = ['drake', 'void grubs', 'rift', 'baron']
@@ -276,13 +277,14 @@ def index(request):
         if w_wins > w_loses:
             warding_tips = [
                 'Higher vision in wins than loses',
-                'your wins have much higher wins than loses, focus on warding,\nbuying control wards,\nwarding jngl objectives'
+                'your wins have much higher vision score than loses, focus on warding especially critical spots on the map and invest in control wards'
             ]
         
         else:
             warding_tips = [
-                'Higher vision in losses',
-                'You are putting too much gold into wards \nYou are not warding critical spots on the map'
+                'Higher vision in losses than wins',
+                'You are putting too much gold into wards sometimes its better to save that gold for items',
+                'make sure to ward correctly, ward critical spots on the map'
             ]
 
         # wineate by kda ---------------------------------------------------------------------------------
@@ -295,17 +297,15 @@ def index(request):
             kdatips = [
                 'your KDA is highly impacting your wins',
                 'focus on dying less',
-                'do more pro active plays'
+                'do more proactive plays'
             ]
         else:
-            print(f' \n  ')
             kdatips = [
                 'your good KDA is not affecting you wins',
-                'done be a KDA player'
+                'dont be a KDA player'
                 'dont be afraid of doing risky plays and dying as long as they help secure an advantage'
             ]
         # context -------------------------------------------------------------------------
-        print(f'objectives: {sorted_paired_objectives}')
         context = {
             'bestChamp': best,
             'bestChampWinrate':best_winrate,

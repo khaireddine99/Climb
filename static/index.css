@@ -162,8 +162,8 @@ body {
 
 /* Icons */
 .objective-icon {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 10px;
   object-fit: cover;
   box-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
@@ -174,3 +174,31 @@ body {
   font-size: 1rem;
   color: #33ff00;
 }
+
+/* Insight / Tip box */
+.ward-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
+}
+
+.insight {
+  margin-top: 12px;
+  padding-top: 10px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  font-size: 1rem;
+  color: #bdbdbd;
+
+  line-height: 1.5;
+}
+
+/* Highlight important word */
+.highlight {
+  color: #33ff00;
+  font-weight: 600;
+}
+

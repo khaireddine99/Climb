@@ -40,13 +40,29 @@
                     <p class="champ-winrate">{{ bestChampWinrate }}%</p>
                 </div>
             </div>
+            <br>
+            <p class="insight">your best performing champion recently is {{bestChamp}} with a {{bestChampWinrate}}% winrate</p>
         </div>
 
-        <div class="card">
-            <h3>KDA</h3>
-            <p>Win: {{ winkda }}</p>
-            <p>Lose: {{ losekda }}</p>
-            <p class="tip">{{ kdatips }}</p>
+        <div class="card best-champ">
+            <h3>Average KDA (wins vs loses)</h3>
+            <div class="champ-row">
+                <img src="{% static 'kda.png' %}" class="objective-icon">
+                <div class="champ-info">
+                    <p class="champ-name">Win: </p>
+                    <p class="champ-winrate">{{winkda}}</p>
+
+                </div>
+                <div class="champ-info">
+                    <p class="champ-name">Lose: </p>
+                    <p class="champ-winrate">{{losekda}}</p>
+                    
+                </div>
+            </div>
+            <br>
+            {% for k in kdatips %}
+                <p class="insight">{{k}}</p>
+            {% endfor %}
         </div>
 
         <div class="card objectives">
@@ -76,20 +92,48 @@
 
             </div>
             <br>
-            <p>the objective contributing to your wins the most is {{sortedJnglObjectives.0}}</p>
+            <p class="insight">
+                The objective contributing to your wins the most is 
+                <span class="highlight">{{ sortedJnglObjectives.0 }}</span>
+            </p>
         </div>
 
-        <div class="card">
-            <h3>Game Length</h3>
-            <p>{{ winByGameLength }}</p>
-            <p class="tip">{{ gameLengthTips }}</p>
+        <div class="card best-champ">
+            <h3>Game Length Winrate (short vs long)</h3>
+            <div class="champ-row">
+                <img src="{% static 'watch.png' %}" class="objective-icon">
+                <div class="champ-info">
+                    <p class="champ-name">Short:</p>
+                    <p class="champ-winrate">{{winByGameLength.0}}%</p>
+                </div>
+                <div class="champ-info">
+                    <p class="champ-name">Long:</p>
+                    <p class="champ-winrate">{{winByGameLength.1}}%</p>
+                </div>
+            </div>
+            <br>
+            {% for g in gameLengthTips %}
+                <p class="insight">{{g}}</p>
+            {% endfor %}    
         </div>
 
-        <div class="card">
-            <h3>Vision</h3>
-            <p>Wins: {{ averageWardWins }}</p>
-            <p>Loses: {{ averageWardLoses }}</p>
-            <p class="tip">{{ wardingTips }}</p>
+        <div class="card best-champ">
+            <h3>Average wards per min (wins vs loses)</h3>
+            <div class="champ-row">
+                <img src="{% static 'ward.png' %}" class="objective-icon">
+                <div class="champ-info">
+                    <p class="champ-name">Wins:</p>
+                    <p class="champ-winrate">{{averageWardWins}} wards per min</p>
+                </div>
+                <div class="champ-info">
+                    <p class="champ-name">Loses:</p>
+                    <p class="champ-winrate">{{averageWardLoses}} wards per min</p>
+                </div>
+            </div>
+            <br>
+            {% for warding in wardingTips %}
+                <p class="insight">{{warding}}</p>
+            {% endfor %}
         </div>
 
     </div>
