@@ -9,16 +9,18 @@ class PlayerStats(models.Model):
 
     win_kda = models.FloatField()
     lose_kda = models.FloatField()
-    kda_tips = models.TextField()
+
+    kda_tips = models.JSONField()
 
     jngl_objectives = models.JSONField()
     sorted_jngl_objectives = models.JSONField()
 
     average_ward_wins = models.FloatField()
     average_ward_loses = models.FloatField()
-    warding_tips = models.TextField()
+
+    warding_tips = models.JSONField()
 
     win_by_game_length = models.JSONField()
-    game_length_tips = models.TextField()
+    game_length_tips = models.JSONField()
 
     updated_at = models.DateTimeField(auto_now=True)

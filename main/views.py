@@ -2,14 +2,16 @@ from django.shortcuts import render
 import requests
 import time 
 from concurrent.futures import ThreadPoolExecutor
+from .models import PlayerStats
 
 # clean up the tips, clean up the code   
 # add bar to monitor elo (simple info bar, username and elo) 
 # save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
 # security (obscure admin adress, anti bots)
 # handle more than one champ issue (return error not enough data on your profile)
+# update button, browse the DB 
 
-riot_api_key = 'RGAPI-ffb75f9e-c1fd-456c-97dc-a61fee131d79'
+riot_api_key = 'RGAPI-2a09f697-83df-43cf-9acc-408a9038abc1'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -76,7 +78,32 @@ def index(request):
         except Exception as e:
             print('error getting player id')
             return render(request, 'index.html', context={'error': 'player not found, please enter correct username and tag'})
-            
+
+        # test 
+        player_data = PlayerStats.objects.filter(puuid=player_id).first()
+        if player_data:
+            context = {
+                'bestChamp': player_data.best_champ,
+                'bestChampWinrate': player_data.best_champ_winrate,
+                'champImgRoute': player_data.champ_img_route,
+
+                'winkda': player_data.win_kda,
+                'losekda': player_data.lose_kda,
+                'kdatips': player_data.kda_tips,
+
+                'jnglObjectives': player_data.jngl_objectives,
+                'sortedJnglObjectives': player_data.sorted_jngl_objectives,
+
+                'averageWardWins': player_data.average_ward_wins,
+                'averageWardLoses': player_data.average_ward_loses,
+                'wardingTips': player_data.warding_tips,
+
+                'winByGameLength': player_data.win_by_game_length,
+                'gameLengthTips': player_data.game_length_tips
+            }
+
+            return render(request, 'index.html', context)
+
         # get match ids 
         try:
             match_list_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{player_id}/ids?start=0&count=20&api_key={riot_api_key}'
@@ -305,6 +332,31 @@ def index(request):
                 'dont be a KDA player'
                 'dont be afraid of doing risky plays and dying as long as they help secure an advantage'
             ]
+        
+        # save data to DB 
+        PlayerStats.objects.create(
+            puuid=player_id,
+
+            best_champ=best,
+            best_champ_winrate=best_winrate,
+            champ_img_route=champion_img_route,
+
+            win_kda=win_kda,
+            lose_kda=lose_kda,
+
+            kda_tips=kdatips,
+
+            jngl_objectives=paired_objectives,
+            sorted_jngl_objectives=sorted_paired_objectives,
+
+            average_ward_wins=w_wins,
+            average_ward_loses=w_loses,
+
+            warding_tips=warding_tips,
+
+            win_by_game_length=percentage_winrate_by_game_length,
+            game_length_tips=game_length_tips
+        )
         # context -------------------------------------------------------------------------
         context = {
             'bestChamp': best,
