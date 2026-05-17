@@ -13,15 +13,31 @@
 
   <div class="container">
 
-    <!-- Search -->
     <form method="post" class="search-box">
         {% csrf_token %}
+
         <input type="text" name="userName" placeholder="Summoner name..." required>
         <input type="text" name="userTag" placeholder="#TAG" required>
-        <button type="submit">Analyze</button>
+
+        <div class="button-row">
+            <button type="submit" name="action" value="analyze">
+                Analyze
+            </button>
+
+            {% if bestChamp %}
+            <button type="submit" name="action" value="update" class="update-btn">
+                Update
+            </button>
+            {% endif %}
+        </div>
     </form>
 
     <!-- Results -->
+    {% if error %}
+    <div class="error-box">
+        {{ error }}
+    </div>
+    {% endif %}
     {% if bestChamp %}
     <div class="cards">
 

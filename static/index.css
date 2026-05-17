@@ -202,3 +202,39 @@ body {
   font-weight: 600;
 }
 
+
+.search-box .update-btn:hover {
+  background: rgba(77, 104, 255);
+}
+
+.search-box .update-btn {
+  background: rgba(0, 133, 215);
+  border: 1px solid rgba(77, 127, 255);
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
+/* error message */
+.error-box {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+
+  background: rgba(255, 77, 109, 0.08);
+  border: 1px solid rgba(255, 77, 109, 0.25);
+
+  border-radius: 10px;
+
+  color: #ffd1d9;
+  font-size: 1.5rem;
+
+  backdrop-filter: blur(4px);
+
+  box-shadow: 0 0 12px rgba(255, 77, 109, 0.12);
+}

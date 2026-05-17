@@ -1,17 +1,12 @@
 from django.shortcuts import render
 import requests
-import time 
-from concurrent.futures import ThreadPoolExecutor
 from .models import PlayerStats
+ 
+# maybe i'll add an anti spam thing to deter assholes and losers
+# deploy (clean up up code, files and purge DB), debug mode = False 
+# add error logger 
 
-# clean up the tips, clean up the code   
-# add bar to monitor elo (simple info bar, username and elo) 
-# save all to database, first search calls from DB if it exists, UPDATE button calls the riot API
-# security (obscure admin adress, anti bots)
-# handle more than one champ issue (return error not enough data on your profile)
-# update button, browse the DB 
-
-riot_api_key = 'RGAPI-2a09f697-83df-43cf-9acc-408a9038abc1'
+riot_api_key = 'RGAPI-8d707a04-5c45-44a8-b121-64c255a07f22'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -67,6 +62,7 @@ def index(request):
     if request.method == 'POST':
         username = request.POST.get('userName')
         usertag = request.POST.get('userTag', '').lstrip('#')
+        action = request.POST.get('action')
 
         # get the player id
         try:
@@ -74,14 +70,12 @@ def index(request):
             response = requests.get(player_id_api)
             player_id_data = response.json()
             player_id = player_id_data['puuid']
-            print(f"player id {player_id_data['puuid']}")
         except Exception as e:
-            print('error getting player id')
-            return render(request, 'index.html', context={'error': 'player not found, please enter correct username and tag'})
+            return render(request, 'index.html', context={'error': 'player not found, please enter a correct username and tag combination'})
 
         # test 
         player_data = PlayerStats.objects.filter(puuid=player_id).first()
-        if player_data:
+        if player_data and action != 'update':
             context = {
                 'bestChamp': player_data.best_champ,
                 'bestChampWinrate': player_data.best_champ_winrate,
@@ -111,7 +105,6 @@ def index(request):
             match_list = response.json()
             classic_matches_list = []
         except Exception as e:
-            print(f'failed at retrieving the matches')
             return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
 
         # get each match info and store the CLASSIC only games 
@@ -123,11 +116,10 @@ def index(request):
                 if data['info']['gameMode'] == 'CLASSIC':
                     classic_matches_list.append(data)
             except Exception as e:
-                print('failed at retrieving match info')
                 return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
         
         if len(classic_matches_list) <= 1:
-            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your match histroy to gather information'})
+            return render(request, 'index.html', context={'error': 'not enough SUMMONERs RIFT games in your match history to gather information'})
 
         # store champions in disctionnary, calculate winrate
         favorite_heroes = {}
@@ -165,11 +157,11 @@ def index(request):
                     best = champ
         
         if best == None:
-            return render(request, 'index.html', context={'error': 'not enough SUMMONER RIFT games in your match histroy to gather information'})
+            return render(request, 'index.html', context={'error': 'not enough SUMMONERS RIFT games in your match history to gather information'})
         
         best_winrate = round(best_winrate * 100)
 
-        print(f'best champion is {best}')
+
         # prepare url to get the champion icon
         champion_img = format_champ_name(best)
         version = '14.10.1'
@@ -261,20 +253,19 @@ def index(request):
             else:
                 objectives_per_loses.append([ally_objectives, total_objectives])
 
-        print(f'based on your match history your best performing champion is {best}')
+
 
         # winrate by game length
         percentage_winrate_by_game_length = get_winrates(winrate_by_length)
         if percentage_winrate_by_game_length[0] > percentage_winrate_by_game_length[1]:
             game_length_tips = [
-                'strong early, weak late',
                 'You perform better in short games',
                 'After 25-30 min, avoid roaming the map aimlessly',
                 'Convert leads into Baron / Elder, then eventually end the game.'
             ]
         else:
             game_length_tips = [
-                'weak early, strong late',
+                'You perform better in long games',
                 'Play safer in the early game and try to die less',
                 'Play for the late game and focus on scaling',
             ]
@@ -299,7 +290,7 @@ def index(request):
         
         w_loses = round(ward_average / len(wards_per_minute_loses), 1)
 
-        print(f'ward win {w_wins}, ward loses {w_loses}')
+
         
         if w_wins > w_loses:
             warding_tips = [
@@ -317,13 +308,11 @@ def index(request):
         # wineate by kda ---------------------------------------------------------------------------------
         win_kda = calculate_kda_average(kda_per_wins)
         lose_kda = calculate_kda_average(kda_per_loses)
-        print(f'kda average while win {win_kda}')
-        print(f'kda average while losing {lose_kda}')
 
         if win_kda > lose_kda:
             kdatips = [
                 'your KDA is highly impacting your wins',
-                'focus on dying less',
+                'focus on maintaining a good KDA',
                 'do more proactive plays'
             ]
         else:
@@ -334,29 +323,31 @@ def index(request):
             ]
         
         # save data to DB 
-        PlayerStats.objects.create(
-            puuid=player_id,
+        PlayerStats.objects.update_or_create(
+        puuid=player_id,
 
-            best_champ=best,
-            best_champ_winrate=best_winrate,
-            champ_img_route=champion_img_route,
+        defaults={
+            'best_champ': best,
+            'best_champ_winrate': best_winrate,
+            'champ_img_route': champion_img_route,
 
-            win_kda=win_kda,
-            lose_kda=lose_kda,
+            'win_kda': win_kda,
+            'lose_kda': lose_kda,
 
-            kda_tips=kdatips,
+            'kda_tips': kdatips,
 
-            jngl_objectives=paired_objectives,
-            sorted_jngl_objectives=sorted_paired_objectives,
+            'jngl_objectives': paired_objectives,
+            'sorted_jngl_objectives': sorted_paired_objectives,
 
-            average_ward_wins=w_wins,
-            average_ward_loses=w_loses,
+            'average_ward_wins': w_wins,
+            'average_ward_loses': w_loses,
 
-            warding_tips=warding_tips,
+            'warding_tips': warding_tips,
 
-            win_by_game_length=percentage_winrate_by_game_length,
-            game_length_tips=game_length_tips
-        )
+            'win_by_game_length': percentage_winrate_by_game_length,
+            'game_length_tips': game_length_tips
+        }
+    )
         # context -------------------------------------------------------------------------
         context = {
             'bestChamp': best,
@@ -373,5 +364,6 @@ def index(request):
             'winByGameLength':percentage_winrate_by_game_length,
             'gameLengthTips':game_length_tips
         }
+
     
     return render(request, 'index.html', context)
