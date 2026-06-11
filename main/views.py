@@ -5,8 +5,9 @@ from .models import PlayerStats
 # maybe i'll add an anti spam thing to deter assholes and losers
 # deploy (clean up up code, files and purge DB), debug mode = False 
 # add error logger 
+# security
 
-riot_api_key = 'RGAPI-8d707a04-5c45-44a8-b121-64c255a07f22'
+riot_api_key = 'RGAPI-df137e52-b767-43a1-9937-c3feb6c8a85e'
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
