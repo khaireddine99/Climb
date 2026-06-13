@@ -5,7 +5,6 @@ from concurrent.futures import ThreadPoolExecutor
  
 # security (anti spam / hidden admin panel / debug settings false / )
 # write a debug file 
-# not getting zaheen image
 
 riot_api_key = 'RGAPI-1904b037-e51f-4895-a24c-b8e15c69b28a'
 
@@ -201,7 +200,7 @@ def index(request):
 
         # prepare url to get the champion icon
         champion_img = format_champ_name(best)
-        version = '14.10.1'
+        version = '16.12.1'
         champion_img_route = f'https://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{champion_img}.png'
 
         winrate_by_length = {
