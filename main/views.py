@@ -1,13 +1,38 @@
 from django.shortcuts import render
 import requests
 from .models import PlayerStats
+from concurrent.futures import ThreadPoolExecutor
  
-# maybe i'll add an anti spam thing to deter assholes and losers
-# deploy (clean up up code, files and purge DB), debug mode = False 
-# add error logger 
-# security
+# security (anti spam / hidden admin panel / debug settings false / )
+# write a debug file 
+# not getting zaheen image
 
-riot_api_key = 'RGAPI-df137e52-b767-43a1-9937-c3feb6c8a85e'
+riot_api_key = 'RGAPI-1904b037-e51f-4895-a24c-b8e15c69b28a'
+
+def get_match_data(match_id):
+    '''get match details from match id, return HTTP errors'''
+    try:
+        match_info_api = (
+            f'https://europe.api.riotgames.com/lol/match/v5/matches/'
+            f'{match_id}?api_key={riot_api_key}'
+        )
+
+        response = requests.get(match_info_api)
+
+        # IMPORTANT: catch HTTP errors
+        if response.status_code != 200:
+            print(f"[ERROR BODY] {response.text}")
+            return None
+        
+        data = response.json()
+
+        if data['info']['gameMode'] == 'CLASSIC':
+            return data
+
+    except Exception as e:
+        print('request dropped for some dumb reason ?? ')
+
+    return None
 
 def get_winrates(data):
     '''cleans up winrate by game length data'''
@@ -72,6 +97,7 @@ def index(request):
             player_id_data = response.json()
             player_id = player_id_data['puuid']
         except Exception as e:
+            print('player not found')
             return render(request, 'index.html', context={'error': 'player not found, please enter a correct username and tag combination'})
 
         # test 
@@ -106,9 +132,10 @@ def index(request):
             match_list = response.json()
             classic_matches_list = []
         except Exception as e:
+            print('couldnt get match ids')
             return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
 
-        # get each match info and store the CLASSIC only games 
+        '''# get each match info and store the CLASSIC only games 
         for m in match_list:
             try:
                 match_info_api = f'https://europe.api.riotgames.com/lol/match/v5/matches/{m}?api_key={riot_api_key}'
@@ -117,10 +144,19 @@ def index(request):
                 if data['info']['gameMode'] == 'CLASSIC':
                     classic_matches_list.append(data)
             except Exception as e:
-                return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})
+                print('couldnt get match info')
+                return render(request, 'index.html', context={'error': 'we are having problems with the API come back later'})'''
         
+        # get match info but FASTER 
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            results = executor.map(get_match_data, match_list)
+        
+        classic_matches_list = [match for match in results if match]
+
         if len(classic_matches_list) <= 1:
+            print('not enough matches')
             return render(request, 'index.html', context={'error': 'not enough SUMMONERs RIFT games in your match history to gather information'})
+
 
         # store champions in disctionnary, calculate winrate
         favorite_heroes = {}
